@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>电影大数据展示</title>
+        <meta charset="utf-8">
+        <script src="./js/echarts-all.js"></script>
+        <script type="text/javascript" src="./js/jquery.min.js"></script>
+    </head>
+
+    <body>
+    <div>
+        <div id="points" style="width: auto;height:600px"></div> <!-- 散点图 -->
+        <div id="main" style="width: 600px;height:400px;float: left"></div>
+        <div id="test" style="margin: auto"></div>
+    </div>
+
+        <!-- 饼状图 -->
+        <script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+    
+            // 指定图表的配置项和数据
+            var option = {
+                title : {
+                    text: '某站点用户访问来源',
+                    subtext: '纯属虚构',
+                    x:'center'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient : 'vertical',
+                    x : 'left',
+                    data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {
+                            show: true,
+                            type: ['pie', 'funnel'],
+                            option: {
+                                funnel: {
+                                    x: '25%',
+                                    width: '50%',
+                                    funnelAlign: 'left',
+                                    max: 1548
+                                }
+                            }
+                        },
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                series : [
+                    {
+                        name:'访问来源',
+                        type:'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data:[
+                            {value:335, name:'直接访问'},
+                            {value:310, name:'邮件营销'},
+                            {value:234, name:'联盟广告'},
+                            {value:135, name:'视频广告'},
+                            {value:1548, name:'搜索引擎'}
+                        ]
+                    }
+                ]
+            };
+    
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        </script>
+
+    <!-- 散点图 -->
+    <script  type="text/javascript">
+        $(function(){
+            $.getJSON("data.json",function(data){
+                var p = [];
+                var i = 0;
+                $.each(data,function(infoIndex,info){
+                    if(info["time"].length >= 10 && info["time"].charAt(7)=='-'){
+                        var time = info["time"].substr(0,10);
+                        var date = time.replace(/-/g, "/");
+                        var x = parseFloat(info["score"]).toFixed(2)-0;
+                        //console.info(x);
+                        p.push([
+                            new Date(date),
+                            x,
+                            info["name"]
+                        ]);
+                        i++;
+                    }
+                })
+                var myChart = echarts.init(document.getElementById('points'));
+
+                // 指定图表的配置项和数据
+                var option = {
+                    title : {
+                        text : 'movies时间分布散点图',
+                        subtext : 'dataZoom支持'
+                    },
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer:{
+                            show: true,
+                            type : 'cross',
+                            lineStyle: {
+                                type : 'dashed',
+                                width : 1
+                            }
+                        }
+                    },
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    //最初现实范围70%至100%
+                    dataZoom: {
+                        show: true,
+                        start : 70,
+                        end : 100
+                    },
+                    legend : {
+                        data : ['movies']
+                    },
+                    // dataRange: {
+                    //     min: 0,
+                    //     max: 10,
+                    //     orient: 'horizontal',
+                    //     y: 30,
+                    //     x: 'center',
+                    //     //text:['高','低'],           // 文本，默认为数值文本
+                    //     color:['lightgreen','orange'],
+                    //     splitNumber: 10
+                    // },
+                    grid: {
+                        y2: 80
+                    },
+                    xAxis : [
+                        {
+                            type : 'time',
+                            splitNumber:10
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    animation: false,
+                    series : [
+                        {
+                            name:'movies',
+                            type:'scatter',
+                            tooltip : {
+                                trigger: 'axis',
+                                formatter : function (params) {
+                                    console.info("start:");
+                                    var date = new Date(params.value[0]);
+                                    console.info("p:"+date.getDate());
+                                    return ''//params.seriesName
+                                        + params.value[2]
+                                        +  '<br/>'
+                                        + ' （'
+                                        + date.getFullYear() + '-'
+                                        + (date.getMonth() + 1) + '-'
+                                        + date.getDate() + '） '
+                                        + ', '
+                                        + params.value[1];
+                                },
+                                axisPointer:{
+                                    type : 'cross',
+                                    lineStyle: {
+                                        type : 'dashed',
+                                        width : 1
+                                    }
+                                }
+                            },
+                            symbolSize: 1,
+                            data: (function () {
+                                var d = p;
+                                var len = 0;
+                                var now = new Date();
+                                var value;
+                                // while (len++ < 1500) {
+                                //     d.push([
+                                //         new Date(1900, 1, 1, 0, Math.round(Math.random()*100000000)),
+                                //         (Math.random()*10).toFixed(2) - 0,
+                                //         (Math.random()*100).toFixed(2) - 0
+                                //     ]);
+                                // }
+                                return d;
+                            })()
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            })
+        })
+    </script>
+
+    <!--<script  type="text/javascript">-->
+        <!--$(function(){-->
+            <!--$.getJSON("data.json",function(data){-->
+                <!--// for(var i=0; i<100; i++){-->
+                <!--//     $('#test').append(data[i].name + "<br>");-->
+                <!--// }-->
+                <!--var strHtml = "";-->
+                <!--$.each(data,function(infoIndex,info){-->
+                    <!--if(info["time"].length >= 10) {-->
+                        <!--var time = info["time"].substr(0, 10);-->
+                        <!--strHtml += time.replace(/-/g, "/") + info["name"] +  (parseFloat(info["score"]).toFixed(2)-0)+"<br/>";-->
+
+                    <!--}-->
+
+                <!--})-->
+                <!--$('#test').html(strHtml);-->
+            <!--})-->
+        <!--})-->
+    <!--</script>-->
+    </body>
+</html>

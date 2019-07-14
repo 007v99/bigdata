@@ -1,0 +1,29 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="movie2:war exploded">
+    <output-path>$PROJECT_DIR$/out</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="movie2/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="movie2" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Spring MVC-4.3.18.RELEASE" />
+          <element id="library" level="project" name="Spring-4.3.18.RELEASE" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/fastjson-1.2.58.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/mysql-connector-java-5.0.8-bin.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson-databind-2.2.3.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson-core-2.2.3.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson-annotations-2.2.3.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson/jackson-databind-2.7.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson/jackson-core-2.7.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/jackson/jackson-annotations-2.7.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/jar包/mysql-connector-java-5.0.8-bin.jar" />
+          <element id="file-copy" path="$USER_HOME$/jar包/jackson-databind-2.7.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/jar包/jackson-core-2.7.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/jar包/jackson-annotations-2.7.0.jar" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

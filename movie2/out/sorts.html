@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分类走势图</title>
+    <script type="text/javascript" src="echarts-all.js"></script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<div id="sorts" style="width: auto;height:600px"></div>
+<div id="director" style="width: 500px;height:600px;margin: auto"></div>
+
+<script type="text/javascript">
+    $(function(){
+        $.getJSON("test.json",function(data) {
+            var temp = [];
+            $.each(data,function(index,ty) {
+                var year = parseInt(ty.year);
+                var num = year - 1911;
+                var type = ty.type;
+                for (x in type) {
+                    var flag = true;
+                    temp.forEach(function(s){
+                        if(s.name==x) {
+                            flag = false;
+                            s.data[num] += parseInt(type[x]);
+                        }
+                    });
+                    if(flag){
+                        var p = [];
+                        for(i=1911;i<=2019;i++){
+                            p.push(0);
+                        }
+                        var so = {
+                            name:x,
+                            type:'line',
+                            stack: '总量',
+                            itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                            data:p
+                        }
+                        so.data[num] + parseInt(type[x]);
+                        temp.push(so);
+                    }
+                }
+
+            });
+
+            var all_year = [];
+            for(i=1911;i<=2019;i++){
+                all_year.push(i);
+            }
+            var myChart = echarts.init(document.getElementById('sorts'));
+            var option = {
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['喜剧','情色','惊栗','脱口秀','科幻','悬念','愛情 Romance','运动','恐怖','儿童','音樂 Music','灾难','戏曲','同性','犯罪','西部','Adult','动画','传记','纪录片','荒诞','惊悚','驚悚 Thriller','冒险','奇幻','歌舞','動畫 Animation','历史','悬疑','古装','真人秀','音乐','動作 Action','剧情','黑色电影','短片','舞台艺术','武侠','爱情','家庭','鬼怪','战争','动作','Reality-TV']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : all_year
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value'
+                    }
+                ],
+                series : temp
+            };
+            myChart.setOption(option);
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+        $.getJSON("director.json", function (data) {
+            var top_director = data.slice(0,10);
+            var low_director = data.slice(-10);
+
+            var name = [];
+            var su = [];
+            var fa = [];
+            top_director.forEach(function(a){
+                su.push(a['avg']);
+                name.push(a['name']);
+                console.info(a['name']);
+            });
+            for(i=0;i<10;i++){
+                su.push(0);
+                fa.push(0);
+            }
+            low_director.forEach(function(b){
+                fa.push(b['avg']);
+                name.push(b['name']);
+                console.info(b['name']);
+            });
+
+
+            var myChart = echarts.init(document.getElementById('director'));
+            var option = {
+                title : {
+                    text: '最成功导演与最失败导演',
+                    subtext: '纯属虚构'
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['最成功导演','最失败导演']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'value',
+                        //boundaryGap : [0, 0.01]
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'category',
+                        data : name
+                    }
+                ],
+                series : [
+                    {
+                        name:'失败导演',
+                        type:'bar',
+                        data:fa,
+                    },
+                    {
+                        name:'成功导演',
+                        type:'bar',
+                        data:su,
+                    }
+
+                ]
+            };
+            myChart.setOption(option);
+        })
+    })
+
+
+</script>
+</body>
+</html>
